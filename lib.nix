@@ -92,7 +92,7 @@ rec
                         (throw "No 'rev', 'tag' or 'branch' available to specify key");
                   checkout = builtins.fetchGit ({
                     url = v.git;
-                  } // lib.optionalAttrs (v ? rev) {
+                  } // lib.optionalAttrs (v ? rev) rec {
                     rev = let
                             query = p: p.name == k && (lib.substring 0 (4 + lib.stringLength v.git) p.source) == "git+${v.git}";
                             extractRevision = url: lib.last (lib.splitString "#" url);
@@ -101,6 +101,7 @@ rec
                             match = lib.findFirst (p: lib.substring 0 7 p.revision == lib.substring 0 7 v.rev) null packageLocks;
                           in
                             if ! (isNull match) then match.revision else v.rev;
+                    ref = rev;
                   } // lib.optionalAttrs (v ? branch) {
                     ref = v.branch;
                   } // lib.optionalAttrs (v ? tag) {
